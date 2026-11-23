@@ -1,1 +1,255 @@
-placeholder
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تحدّي الفرز والتصفية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: بطاقات تقويم صفية هادئة، تُفهم بالنظر دون صوت
+   IDEA: بطاقة «وقفة تقويم» المطبوعة: خلفية خضراء مخططة وبطاقة بيضاء بحواف داكنة
+   PICTURE: البطاقة نفسها هي لوحة اللعب
+   COLOUR and TYPE: أخضر مريمي مخطط، أبيض، أزرق #2f5fe0 للعناوين الصغيرة، أخضر وأحمر للتغذية الراجعة، Tajawal
+   LAYOUT: بطاقة واحدة بعرض 820px في الوسط، أزرار 56px */
+:root{color-scheme:light;--s1:#8cbfb3;--s2:#7cb1a5;--card:#fff;--box:#fffdf6;--ink:#1d1d24;--soft:#6b7280;--blue:#2f5fe0;--ok:#22a06b;--no:#e5484d;--row:#ffe27a;--col:#a8d8ff;--sun:#f5b800}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;min-height:100vh;color:var(--ink);font:18px/1.6 "Tajawal",Tahoma,sans-serif;background:repeating-linear-gradient(90deg,var(--s1) 0 34px,var(--s2) 34px 68px);overflow-x:clip;display:flex;align-items:center}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.wrap{width:min(100%,860px);margin:0 auto;padding:clamp(14px,3vw,30px)}
+.card{background:var(--card);border-radius:30px;padding:clamp(18px,3.5vw,34px);box-shadow:0 10px 30px rgba(20,60,50,.18);min-height:420px;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.lab{display:flex;align-items:center;gap:8px}
+.q{width:46px;height:46px;border-radius:50%;background:var(--blue);border:2.5px solid var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;flex:none}
+.pill{background:var(--blue);color:#fff;border-radius:10px;padding:5px 16px;font-weight:700;font-size:16px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{border:1.5px solid var(--ink);border-radius:99px;padding:1px 12px;font-size:14px;font-weight:700;white-space:nowrap}
+.box{background:var(--box);border:1.5px solid var(--ink);border-radius:18px;padding:16px 20px}
+.prompt{font-size:clamp(20px,3.6vw,26px);font-weight:800;text-align:center;line-height:1.4}
+.area{margin-top:14px;flex:1;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.show{display:grid;place-items:center}
+.chip{border:2px dashed var(--blue);border-radius:16px;padding:12px 24px;font-size:clamp(20px,3.6vw,26px);font-weight:700;text-align:center;background:#fff}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.opt{background:#fff;border:1.5px solid var(--ink);border-radius:14px;padding:12px;font-size:19px;font-weight:700;min-height:56px;color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.opt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.opt.good{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.bad{background:var(--no);color:#fff;border-color:var(--no)}
+.bad,.shake{animation:sh .4s}
+@keyframes sh{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.fb{min-height:40px;text-align:center;font-size:22px;font-weight:800}
+.fb.y{color:var(--ok)}.fb.n{color:var(--no)}
+.main{background:var(--blue);color:#fff;border:2px solid var(--ink);border-radius:16px;padding:10px 34px;font-size:21px;font-weight:800;min-height:56px;box-shadow:0 4px 0 var(--ink)}
+.main:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.link{background:none;color:var(--soft);font-size:16px;padding:6px 8px;text-decoration:underline}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.goal{text-align:center}
+.goal h2{font-size:clamp(26px,4.6vw,38px);line-height:1.15;margin:4px 0 12px}
+.rule{font-size:20px;line-height:1.7;text-align:center}
+.rule b{color:var(--blue)}
+.map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stop{background:var(--box);border:1.5px solid var(--ink);border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:12px;text-align:right;color:var(--ink)}
+.stop .q{width:40px;height:40px;font-size:18px}
+.stop.lock{opacity:.45;cursor:not-allowed}
+.stop.lock .q{background:#bbb}
+.stop b{display:block;font-size:17px;line-height:1.3}
+.st{display:flex;gap:2px}
+.star{width:20px;height:20px;fill:var(--sun)}.star.off{fill:#d9d9d9}
+.who{font-size:16px;color:var(--soft);text-align:center;margin-bottom:10px}
+.who b{color:var(--ink)}
+.field{display:grid;gap:6px;max-width:420px;margin:0 auto 14px;width:100%}
+.field label{font-weight:700}
+.field input,.field select{border:1.5px solid var(--ink);border-radius:12px;padding:10px 14px;font-size:18px;background:#fff;color:var(--ink);min-height:50px}
+.err{color:var(--no);text-align:center;min-height:28px;font-weight:700}
+table{border-collapse:separate;border-spacing:4px;width:100%;font-size:19px}
+th,td{background:#fff;border:1.5px solid var(--ink);border-radius:10px;padding:8px 6px;text-align:center;cursor:pointer}
+th{background:var(--blue);color:#fff}
+td.r{background:var(--row)}td.c,th.c{background:var(--col);color:var(--ink)}
+.legend{display:flex;justify-content:center;gap:16px;font-size:16px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:6px}.legend i{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--ink)}
+.line{display:flex;flex-direction:column;gap:6px}
+.line div{background:var(--ok);color:#fff;border-radius:12px;padding:8px 12px;font-weight:700;display:flex;gap:10px;align-items:center}
+.line div em{font-style:normal;background:#fff;color:var(--ok);border-radius:50%;width:28px;height:28px;display:grid;place-items:center;flex:none}
+.form{width:min(100%,340px);background:#fff;border:1.5px solid var(--ink);border-radius:14px;padding:14px;text-align:right}
+.form label{font-weight:700}.form label b{color:var(--no)}
+.form .in{border:1.5px solid #9aa;border-radius:10px;padding:6px 12px;margin:8px 0;font-size:22px;min-height:46px;direction:ltr;text-align:right}
+.form .lim{display:inline-block;background:#e8efff;border-radius:8px;padding:2px 10px;font-size:15px}
+.dots{display:flex;gap:5px}.dots i{width:12px;height:12px;border-radius:50%;background:#d9d9d9;border:1.5px solid var(--ink)}.dots i.on{background:var(--blue)}
+.res{text-align:center}
+.res h2{font-size:clamp(26px,4.6vw,36px);margin:0}
+.score{font-size:clamp(44px,9vw,68px);font-weight:800;color:var(--blue);line-height:1.1}
+.rt{width:100%;font-size:16px;margin-top:10px}
+.rt td,.rt th{cursor:default;padding:6px}
+.rt td:first-child{text-align:right}
+.copy{margin-top:auto;padding-top:16px;font-size:13px;color:var(--soft);text-align:right}
+.info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.info div{background:var(--box);border:1.5px solid var(--ink);border-radius:14px;padding:8px 14px;font-size:16px}
+.info span{display:block;color:var(--soft);font-size:13px}
+.info b{font-size:17px}
+@media(max-width:600px){.info{grid-template-columns:minmax(0,1fr)}}
+.how{margin:0;padding:0 22px 0 0;font-size:17px;line-height:1.8}
+.how b{color:var(--blue)}
+.logo{height:48px;border-radius:12px;background:#334155;padding:5px 10px;display:flex;align-items:center;flex:none;border:2px solid var(--ink)}
+.logo img{height:100%;width:auto;display:block}
+.mini{border-collapse:separate;border-spacing:3px;font-size:15px;width:auto;margin:0 auto}
+.mini th,.mini td{padding:4px 10px;cursor:default;border-width:1px}
+.mini tr.hi td,.mini td.hc,.mini th.hc{background:var(--row);color:var(--ink)}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.flow>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.flow small{font-size:14px;font-weight:700;color:var(--blue)}
+.arr{font-size:28px;font-weight:800;color:var(--blue)}
+.big3{display:flex;justify-content:center;gap:6px}.big3 svg{width:54px;height:54px}
+@media(max-width:600px){.map{grid-template-columns:minmax(0,1fr)}table{font-size:16px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card"><div id="app" style="flex:1;display:flex;flex-direction:column"></div><div class="copy">© مايند | Mind · موارد إبداعية لتعليم مُلهم · جميع الحقوق محفوظة · نسخة مجانية · يُمنع بيعها</div></div></div>
+<script>
+{
+const S='<svg class="star" viewBox="0 0 24 24"><path d="M12 2l3 6.6 7 .8-5.2 4.8 1.4 7L12 17.8 5.8 21.2l1.4-7L2 9.4l7-.8z"/></svg>';
+const starRow=n=>[0,1,2].map(i=>S.replace('class="star"',`class="star${i<n?'':' off'}"`)).join('');
+const formBox=(v,lim,req)=>`<div class="form"><label>العمر ${req?'<b>*</b>':''}</label><div class="in">${v||''}</div>${lim?'<span class="lim">القيد: رقم أكبر من 12</span>':''}</div>`;
+const T=['نص','اختيار','تقييم','ليكرت'];
+const mt=(h,rows,hr=[])=>`<table class="mini"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr class="${hr.includes(i)?'hi':''}">${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+const flow=(a,b,la,lb)=>`<div class="flow"><div><small>${la}</small>${a}</div><span class="arr">←</span><div><small>${lb}</small>${b}</div></div>`;
+const TB={head:['الاسم بالكامل','العمر','المدينة'],rows:[['سلمان فهد','14','الرياض'],['أحمد علي','13','جدة'],['محمد أحمد','14','الدمام'],['سعد خالد','15','الرياض'],['خالد أحمد','13','مكة']]};
+const tbl=()=>`<div style="overflow-x:auto;width:100%"><table class="rt" style="font-size:17px"><thead><tr>${TB.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${TB.rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const H2=['الاسم','العمر'],R4=[['سعد','14'],['محمد','13'],['أحمد','14'],['خالد','15']];
+const L=[
+ {t:'جدول قاعدة البيانات',goal:'أحوّل البيانات إلى جدول في إكسل',
+  rule:'نحدّد البيانات، ثم نختار <b>تنسيق كجدول</b>.',
+  ex:flow('<div class="chip" style="font-size:17px;line-height:1.7">الاسم العمر<br>سعد 14<br>محمد 13</div>',mt(H2,[['سعد','14'],['محمد','13']]),'بيانات','جدول'),type:'order',
+  p:'رتّبي الخطوات',steps:['تحديد البيانات','الضغط على تنسيق كجدول','الضغط على موافق']},
+ {t:'عامل التصفية',goal:'أعرف عمل عامل التصفية',
+  rule:'<b>عامل التصفية:</b> يُظهر سجلات معيّنة فقط.',
+  ex:flow(mt(H2,R4),mt(H2,[['سعد','14'],['أحمد','14']]),'قبل التصفية','بعد التصفية: العمر 14'),type:'quiz',rounds:[
+  {p:'ماذا فعل عامل التصفية؟',v:flow(mt(H2,R4),mt(H2,[['سعد','14'],['أحمد','14']]),'قبل','بعد'),o:['أظهر العمر 14 فقط','رتّب الأسماء'],a:0},
+  {p:'عامل التصفية:',v:'',o:['يُظهر بعض السجلات','يحذف السجلات'],a:0},
+  {p:'لتطبيق عامل التصفية نضغط على:',v:'<table class="mini"><thead><tr><th>الاسم ▾</th><th>العمر ▾</th></tr></thead></table>',o:['سهم رأس العمود ▾','آخر صف'],a:0}]},
+ {t:'تطبيق عامل التصفية',goal:'أطبّق عامل التصفية',
+  rule:'اقرئي الشرط، ثم اضغطي على السجلات التي تظهر،<br>ثم اضغطي <b>تحقّقي</b>.',
+  ex:flow(mt(H2,R4),mt(H2,R4,[0,2]),'الشرط: العمر = 14','اخترت السجلات الصحيحة'),type:'pick',rounds:[
+  {p:'العمر = 14',ans:[0,2]},
+  {p:'المدينة = الرياض',ans:[0,3]},
+  {p:'العمر = 13',ans:[1,4]}]},
+ {t:'فرز البيانات',goal:'أميّز بين الفرز التصاعدي والتنازلي',
+  rule:'<b>الفرز:</b> ترتيب السجلات.<br><b>تصاعدي ↑:</b> من الأصغر إلى الأكبر. <b>تنازلي ↓:</b> من الأكبر إلى الأصغر.',
+  ex:flow('<div class="chip">3 ، 1 ، 2</div>','<div class="chip">1 ، 2 ، 3</div>','قبل','تصاعدي ↑'),type:'quiz',rounds:[
+  {p:'رتّبي تصاعدياً ↑',v:'<div class="chip">3 ، 1 ، 2</div>',o:['1 ، 2 ، 3','3 ، 2 ، 1'],a:0},
+  {p:'رتّبي تنازلياً ↓',v:'<div class="chip">3 ، 1 ، 2</div>',o:['1 ، 2 ، 3','3 ، 2 ، 1'],a:1},
+  {p:'الترتيب الأبجدي (من أ إلى ي):',v:'<div class="chip">سعد ، أحمد ، محمد</div>',o:['أحمد ، سعد ، محمد','محمد ، سعد ، أحمد'],a:0},
+  {p:'«الفرز من أ إلى ي» في الأرقام:',v:'',o:['تصاعدي ↑','تنازلي ↓'],a:0}]},
+ {t:'الفرز الأبجدي',goal:'أفرز الأسماء أبجدياً',
+  rule:'<b>الفرز من أ إلى ي</b> يرتّب الأسماء أبجدياً.<br>اضغطي الأسماء بالترتيب.',
+  ex:flow('<div class="chip">محمد ، أحمد</div>','<div class="chip">أحمد ، محمد</div>','قبل','بعد الفرز'),type:'order',v:1,
+  p:'رتّبي الأسماء من أ إلى ي',steps:['أحمد علي','خالد أحمد','سعد خالد','سلمان فهد','محمد أحمد']},
+ {t:'الفرز متعدد المستويات',goal:'أطبّق الفرز متعدد المستويات',
+  rule:'<b>الفرز متعدد المستويات:</b> الفرز بأكثر من حقل.<br>أولاً: العمر من الأصغر. إذا تساوى العمر: الاسم أبجدياً.',
+  ex:flow(mt(H2,[['محمد','13'],['خالد','15'],['أحمد','13']]),mt(H2,[['أحمد','13'],['محمد','13'],['خالد','15']]),'قبل','العمر ثم الاسم'),type:'order',v:1,
+  p:'رتّبي: العمر أولاً، ثم الاسم',steps:['أحمد علي','خالد أحمد','سلمان فهد','محمد أحمد','سعد خالد']},
+ {t:'خطوات الفرز المخصص',goal:'أنفّذ الفرز متعدد المستويات في إكسل',
+  rule:'نستخدم <b>فرز مخصص</b>،<br>ونضغط <b>إضافة مستوى</b> لإضافة حقل ثانٍ.',
+  ex:'<div class="chip" style="font-size:18px">فرز وتصفية ← فرز مخصص ← إضافة مستوى ← موافق</div>',type:'order',
+  p:'رتّبي الخطوات',steps:['الضغط على فرز وتصفية','الضغط على فرز مخصص','الضغط على إضافة مستوى','الضغط على موافق']},
+ {t:'عوامل التصفية المخصصة',goal:'أطبّق عامل تصفية مخصّصاً',
+  rule:'<b>يحتوي على:</b> يُظهر السجلات التي فيها كلمة معيّنة.<br><b>و:</b> يجب أن يتحقق الشرطان معاً.',
+  ex:flow(mt(['الاسم بالكامل'],[['أحمد علي'],['سعد خالد'],['محمد أحمد']]),mt(['الاسم بالكامل'],[['أحمد علي'],['محمد أحمد']]),'قبل','يحتوي على «أحمد»'),type:'pick',rounds:[
+  {p:'الاسم يحتوي على «أحمد»',ans:[1,2,4]},
+  {p:'الاسم يحتوي على «خالد»',ans:[3,4]},
+  {p:'العمر = 14 <b>و</b> المدينة = الرياض',ans:[0]}]}
+];
+let st={name:'',cls:'',stars:[]};
+try{const s=JSON.parse(localStorage.getItem('dg3')||'null');if(s&&s.name)st=s}catch(e){}
+const save=()=>{try{localStorage.setItem('dg3',JSON.stringify(st))}catch(e){}};
+const app=document.getElementById('app');
+const total=()=>st.stars.reduce((a,b)=>a+(b||0),0);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let cur=0,step=0,miss=0,busy=false,order=[],picked=0;
+const LOGO='<span class="logo"><img src="data:image/png;base64,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" alt="مايند Mind"></span>';
+const bar=(num,label,tags)=>`<div class="bar"><div class="lab">${num==='م'?LOGO:`<span class="q">${num}</span>`}<span class="pill">${label}</span></div><div class="tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`;
+const who=()=>`<div class="who">الطالبة: <b>${esc(st.name)}</b> · الفصل: <b>${esc(st.cls)}</b></div>`;
+const INFO=`<div class="info"><div><span>المادة</span><b>المهارات الرقمية</b></div><div><span>الصف</span><b>الثاني المتوسط</b></div><div><span>الفصل الدراسي</span><b>الفصل الدراسي الثاني</b></div><div><span>الوحدة</span><b>الوحدة الأولى: جمع المعلومات</b></div><div style="grid-column:1/-1"><span>الدرس</span><b>الدرس الثاني: التعامل مع قاعدة البيانات</b></div></div>`;
+function start(){
+ app.innerHTML=bar('م','تحدّي الفرز والتصفية',['المهارات الرقمية'])+INFO+`<div class="box"><div class="prompt" style="margin-bottom:6px">تعليمات اللعبة</div><ol class="how"><li>اكتبي اسمكِ وفصلكِ ثم اضغطي <b>ابدئي المغامرة</b>.</li><li>في اللعبة <b>ثماني محطات</b>، كل محطة تمثّل هدفاً من أهداف الدرس.</li><li>اقرئي <b>هدف المحطة</b> والتعريف قبل البدء.</li><li>اختاري الإجابة: <span style="color:var(--ok);font-weight:700">الأخضر</span> إجابة صحيحة، و<span style="color:var(--no);font-weight:700">الأحمر</span> حاولي مرة أخرى.</li><li>تحصلين على <b>ثلاث نجوم</b> إذا أجبتِ دون أخطاء، وتُفتح المحطة التالية بعد إنهاء السابقة.</li><li>بعد المحطة الثامنة تظهر <b>نتيجتكِ النهائية</b>؛ اعرضيها على معلمتكِ.</li></ol></div><div class="area"><div class="field"><label for="nm">اسم الطالبة</label><input id="nm" autocomplete="off" value="${esc(st.name)}"></div><div class="field"><label for="cl">الفصل</label><input id="cl" autocomplete="off" placeholder="مثال: 3/2" value="${esc(st.cls)}"></div><div class="err" id="er"></div><div class="row" style="margin:0"><button class="main" id="go">ابدئي المغامرة</button>${st.name?'<button class="link" id="nw0">طالبة جديدة</button>':''}</div>${st.name?`<div class="who" style="margin:0">محفوظ لـ ${esc(st.name)}: ${total()} نجمة من 24</div>`:''}</div>`;
+ const n0=document.getElementById('nw0');if(n0)n0.onclick=()=>{st={name:'',cls:'',stars:[]};save();start()};
+ document.getElementById('go').textContent=st.name?'متابعة':'ابدئي المغامرة';document.getElementById('go').onclick=()=>{const n=document.getElementById('nm').value.trim(),c=document.getElementById('cl').value.trim();
+  if(!n||!c){document.getElementById('er').textContent='اكتبي الاسم والفصل أولاً';return}
+  if(n!==st.name||c!==st.cls)st={name:n,cls:c,stars:[]};save();map()};
+}
+function map(){
+ const open=i=>i===0||st.stars[i-1]>0;
+ const all=st.stars.filter(x=>x>0).length===L.length;
+ app.innerHTML=bar('م','خريطة المحطات',[`${total()} / 24 نجمة`])+INFO+who()+`<div class="map">${L.map((l,i)=>`<button class="stop${open(i)?'':' lock'}" data-i="${i}"><span class="q">${i+1}</span><span><b>${l.t}</b><span class="st">${starRow(st.stars[i]||0)}</span></span></button>`).join('')}</div><div class="row">${all?'<button class="main" id="rs">عرض النتيجة</button>':''}<button class="link" id="nw">طالبة جديدة</button></div>`;
+ app.querySelectorAll('.stop').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(open(i))intro(i)});
+ const r=document.getElementById('rs');if(r)r.onclick=result;
+ document.getElementById('nw').onclick=()=>{st={name:'',cls:'',stars:[]};save();start()};
+}
+function intro(i){
+ cur=i;const l=L[i];
+ app.innerHTML=bar(i+1,'هدف المحطة',[`المحطة ${i+1} من 8`])+`<div class="goal"><h2>${l.goal}</h2></div><div class="box rule">${l.rule}${l.ex?`<div style="margin-top:12px;padding-top:12px;border-top:1.5px dashed #ccc"><div style="font-size:15px;color:var(--soft);margin-bottom:6px">مثال</div>${l.ex}</div>`:''}</div><div class="row"><button class="main" id="go">ابدئي</button></div><div class="row" style="margin-top:4px"><button class="link" id="bk">العودة للخريطة</button></div>`;
+ document.getElementById('go').onclick=()=>{step=0;miss=0;if(l.type==='order'){order=shuffle(l.steps);picked=0}play()};
+ document.getElementById('bk').onclick=map;
+}
+function fb(ok){const f=document.getElementById('fb');f.className='fb '+(ok?'y':'n');f.textContent=ok?'أحسنتِ، إجابة صحيحة ✓':'حاولي مرة أخرى ✗'}
+function next(len){busy=true;setTimeout(()=>{busy=false;step++;step>=len?finish():play()},900)}
+function frame(prompt,body,n,of){
+ return bar(cur+1,L[cur].t,[`<span class="dots">${Array.from({length:of},(_,k)=>`<i class="${k<n?'on':''}"></i>`).join('')}</span>`])+`<div class="box prompt">${prompt}</div><div class="area">${body}<div class="fb" id="fb" aria-live="polite"></div></div><div class="row" style="margin-top:0"><button class="link" id="bk">العودة للخريطة</button></div>`;
+}
+function play(){
+ const l=L[cur];
+ if(l.type==='quiz'){
+  const r=l.rounds[step];
+  app.innerHTML=frame(r.p,`${r.v?`<div class="show">${r.v}</div>`:''}<div class="opts">${r.o.map((o,k)=>`<button class="opt" data-k="${k}">${o}</button>`).join('')}</div>`,step,l.rounds.length);
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(busy)return;const ok=+b.dataset.k===r.a;b.classList.remove('bad');void b.offsetWidth;b.classList.add(ok?'good':'bad');fb(ok);if(ok)next(l.rounds.length);else miss++});
+ }else if(l.type==='table'){
+  const r=l.rounds[step];
+  app.innerHTML=frame(r.p,`<div style="overflow-x:auto"><table id="tb"><thead><tr>${l.head.map((h,c)=>`<th data-r="-1" data-c="${c}">${h}</th>`).join('')}</tr></thead><tbody>${l.rows.map((row,ri)=>`<tr>${row.map((v,c)=>`<td data-r="${ri}" data-c="${c}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="legend"><span><i style="background:var(--row)"></i>السجل = صف</span><span><i style="background:var(--col)"></i>الحقل = عمود</span></div>`,step,l.rounds.length);
+  const tb=document.getElementById('tb');
+  tb.onclick=e=>{const cell=e.target.closest('td,th');if(!cell||busy)return;const ri=+cell.dataset.r,c=+cell.dataset.c;
+   const ok=r.k==='r'?ri===r.i:c===r.i;
+   if(ok)tb.querySelectorAll('td,th').forEach(x=>{if(r.k==='r'&&+x.dataset.r===r.i)x.classList.add('r');if(r.k==='c'&&+x.dataset.c===r.i)x.classList.add('c')});
+   else{miss++;tb.classList.remove('shake');void tb.offsetWidth;tb.classList.add('shake')}
+   fb(ok);if(ok)next(l.rounds.length)};
+ }else if(l.type==='pick'){
+  const r=l.rounds[step];let sel=new Set();
+  app.innerHTML=frame(r.p,`<div style="overflow-x:auto"><table id="tb"><thead><tr>${TB.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${TB.rows.map((row,ri)=>`<tr data-r="${ri}">${row.map(v=>`<td data-r="${ri}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="legend"><span><i style="background:var(--row)"></i>سجل اخترتِه</span></div><div class="row" style="margin:0"><button class="main" id="ck">تحقّقي</button></div>`,step,l.rounds.length);
+  const tb=document.getElementById('tb');
+  tb.onclick=e=>{const c=e.target.closest('td');if(!c||busy)return;const ri=+c.dataset.r;sel.has(ri)?sel.delete(ri):sel.add(ri);tb.querySelectorAll(`td[data-r="${ri}"]`).forEach(x=>x.classList.toggle('r',sel.has(ri)))};
+  document.getElementById('ck').onclick=()=>{if(busy)return;const ok=sel.size===r.ans.length&&r.ans.every(x=>sel.has(x));
+   if(ok)next(l.rounds.length);else{miss++;tb.classList.remove('shake');void tb.offsetWidth;tb.classList.add('shake')}
+   const f=document.getElementById('fb');f.className='fb '+(ok?'y':'n');f.textContent=ok?'أحسنتِ، هذه السجلات الصحيحة ✓':'راجعي الشرط وحاولي مرة أخرى ✗'};
+ }else{
+  app.innerHTML=frame(l.p,`${l.v?tbl():''}<div class="line">${l.steps.slice(0,picked).map((s,k)=>`<div><em>${k+1}</em>${s}</div>`).join('')}</div><div class="opts">${order.filter(s=>l.steps.indexOf(s)>=picked).map(s=>`<button class="opt" data-s="${l.steps.indexOf(s)}">${s}</button>`).join('')}</div>`,picked,l.steps.length);
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(busy)return;const ok=+b.dataset.s===picked;
+   if(ok){picked++;if(picked>=l.steps.length){play();step=l.steps.length-1;fb(true);next(l.steps.length)}else play()}
+   else{miss++;b.classList.remove('bad');void b.offsetWidth;b.classList.add('bad');fb(false)}});
+ }
+ document.getElementById('bk').onclick=map;
+}
+function finish(){
+ const n=miss===0?3:miss<=2?2:1;st.stars[cur]=Math.max(st.stars[cur]||0,n);save();
+ const last=cur===L.length-1;
+ app.innerHTML=bar(cur+1,'انتهت المحطة',[L[cur].t])+`<div class="res"><h2>${n===3?'ممتاز':n===2?'رائع':'أحسنتِ'}</h2><div class="big3">${starRow(n)}</div></div><div class="box rule">حقّقتِ الهدف: <b>${L[cur].goal}</b></div><div class="row">${last?'<button class="main" id="rs">عرض النتيجة</button>':'<button class="main" id="nx">المحطة التالية</button>'}<button class="opt" id="ag">إعادة المحطة</button><button class="opt" id="mp">الخريطة</button></div>`;
+ const nx=document.getElementById('nx');if(nx)nx.onclick=()=>intro(cur+1);
+ const r=document.getElementById('rs');if(r)r.onclick=result;
+ document.getElementById('ag').onclick=()=>intro(cur);
+ document.getElementById('mp').onclick=map;
+}
+function result(){
+ const t=total(),pct=Math.round(t/24*100);
+ const lvl=pct>=90?'متميزة':pct>=75?'متقدمة':pct>=60?'متمكنة':'تحتاج إلى دعم';
+ const d=new Date().toLocaleDateString('ar-SA');
+ app.innerHTML=bar('✓','النتيجة النهائية',['المهارات الرقمية',d])+INFO+`<div class="res"><div class="box"><div style="font-size:20px">الطالبة: <b>${esc(st.name)}</b> &nbsp;·&nbsp; الفصل: <b>${esc(st.cls)}</b></div><div class="score">${t} / 24</div><div style="font-size:20px;font-weight:700">${pct}% · المستوى: <span style="color:var(--blue)">${lvl}</span></div></div><table class="rt"><thead><tr><th>الهدف</th><th>النجوم</th></tr></thead><tbody>${L.map((l,i)=>`<tr><td>${i+1}. ${l.goal}</td><td><span class="st" style="justify-content:center">${starRow(st.stars[i]||0)}</span></td></tr>`).join('')}</tbody></table></div><div class="row"><button class="main" id="cp">نسخ النتيجة</button><button class="opt" id="mp">الخريطة</button><button class="opt" id="nw">طالبة جديدة</button></div><div class="err" id="ms" style="color:var(--ok)"></div>`;
+ document.getElementById('cp').onclick=()=>{const txt=`${st.name}\t${st.cls}\t${t}/24\t${pct}%\t${lvl}`;
+  const m=document.getElementById('ms');try{navigator.clipboard.writeText(txt).then(()=>m.textContent='نُسخت النتيجة، ألصقيها في كشف الدرجات',()=>m.textContent='تعذّر النسخ، التقطي صورة للشاشة')}catch(e){m.textContent='تعذّر النسخ، التقطي صورة للشاشة'}};
+ document.getElementById('mp').onclick=map;
+ document.getElementById('nw').onclick=()=>{st={name:'',cls:'',stars:[]};save();start()};
+}
+start();
+}
+</script>
+</body>
+</html>
