@@ -92,6 +92,13 @@ td.r{background:var(--row)}td.c,th.c{background:var(--col);color:var(--ink)}
 .how b{color:var(--blue)}
 .logo{height:48px;border-radius:12px;background:#334155;padding:5px 10px;display:flex;align-items:center;flex:none;border:2px solid var(--ink)}
 .logo img{height:100%;width:auto;display:block}
+.mini{border-collapse:separate;border-spacing:3px;font-size:15px;width:auto;margin:0 auto}
+.mini th,.mini td{padding:4px 10px;cursor:default;border-width:1px}
+.mini tr.hi td,.mini td.hc,.mini th.hc{background:var(--row);color:var(--ink)}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.flow>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.flow small{font-size:14px;font-weight:700;color:var(--blue)}
+.arr{font-size:28px;font-weight:800;color:var(--blue)}
 .big3{display:flex;justify-content:center;gap:6px}.big3 svg{width:54px;height:54px}
 @media(max-width:600px){.map{grid-template-columns:minmax(0,1fr)}table{font-size:16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -103,52 +110,57 @@ td.r{background:var(--row)}td.c,th.c{background:var(--col);color:var(--ink)}
 {
 const S='<svg class="star" viewBox="0 0 24 24"><path d="M12 2l3 6.6 7 .8-5.2 4.8 1.4 7L12 17.8 5.8 21.2l1.4-7L2 9.4l7-.8z"/></svg>';
 const starRow=n=>[0,1,2].map(i=>S.replace('class="star"',`class="star${i<n?'':' off'}"`)).join('');
+const mt=(h,rows,hr=[])=>`<table class="mini"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr class="${hr.includes(i)?'hi':''}">${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+const flow=(a,b,la,lb)=>`<div class="flow"><div><small>${la}</small>${a}</div><span class="arr">←</span><div><small>${lb}</small>${b}</div></div>`;
 const formBox=(v,lim,req)=>`<div class="form"><label>العمر ${req?'<b>*</b>':''}</label><div class="in">${v||''}</div>${lim?'<span class="lim">القيد: رقم أكبر من 12</span>':''}</div>`;
 const T=['نص','اختيار','تقييم','ليكرت'];
 const L=[
  {t:'البيانات والمعلومات',goal:'أميّز بين البيانات والمعلومات',
-  rule:'<b>البيانات:</b> مجموعة من الحقائق مثل الكلمات والأرقام.<br><b>المعلومات:</b> بيانات نُظّمت أو عُولجت فأصبح لها معنى.',type:'quiz',rounds:[
-  {p:'هل ما يلي بيانات أم معلومات؟',v:'<div class="chip">14 شارع البدر</div>',o:['بيانات','معلومات'],a:0},
-  {p:'هل ما يلي بيانات أم معلومات؟',v:'<div class="chip">عنوان منزل سعد: 14 شارع البدر</div>',o:['بيانات','معلومات'],a:1},
-  {p:'هل ما يلي بيانات أم معلومات؟',v:'<div class="chip">115</div>',o:['بيانات','معلومات'],a:0},
-  {p:'هل ما يلي بيانات أم معلومات؟',v:'<div class="chip">عدد سكان الدولة 11,004,000 نسمة</div>',o:['بيانات','معلومات'],a:1},
-  {p:'هل ما يلي بيانات أم معلومات؟',v:'<div class="chip">17 شوال</div>',o:['بيانات','معلومات'],a:0}]},
- {t:'قاعدة البيانات',goal:'أعرّف قاعدة البيانات',
-  rule:'<b>قاعدة البيانات:</b> نظام يمكن من خلاله تنظيم البيانات وإدارتها، والبحث عنها بسرعة.',type:'quiz',rounds:[
-  {p:'قاعدة البيانات هي:',v:'',o:['نظام لتنظيم البيانات','نظام لجمع البيانات فقط','صورة ملونة'],a:0},
-  {p:'أبسط مثال على قاعدة البيانات:',v:'',o:['دفتر العناوين','الآلة الحاسبة','لوحة المفاتيح'],a:0},
-  {p:'تتكون قاعدة البيانات من:',v:'',o:['جدول واحد أو أكثر','جدولين أو أكثر دائماً','صور فقط'],a:0},
-  {p:'جدول قاعدة البيانات هو:',v:'',o:['مجموعة من السجلات','خلية واحدة','برنامج للرسم'],a:0}]},
- {t:'السجل والحقل',goal:'أحدّد السجل والحقل في جدول قاعدة البيانات',
-  rule:'<b>السجل:</b> صف في الجدول يمثّل عنصراً واحداً.<br><b>الحقل:</b> عمود في الجدول له اسم ويتضمن بيانات.',type:'table',
+  rule:'<b>البيانات:</b> كلمات وأرقام متفرقة.<br><b>المعلومات:</b> بيانات مرتّبة لها معنى.',
+  ex:flow('<div class="chip" style="font-size:18px">سعد · 14 · الرياض</div>','<div class="chip" style="font-size:18px">اسم الطالب سعد، عمره 14</div>','بيانات','معلومات'),type:'quiz',rounds:[
+  {p:'بيانات أم معلومات؟',v:'<div class="chip">14</div>',o:['بيانات','معلومات'],a:0},
+  {p:'بيانات أم معلومات؟',v:'<div class="chip">عمر سعد 14 سنة</div>',o:['بيانات','معلومات'],a:1},
+  {p:'بيانات أم معلومات؟',v:'<div class="chip">الرياض</div>',o:['بيانات','معلومات'],a:0},
+  {p:'بيانات أم معلومات؟',v:'<div class="chip">يسكن سعد في الرياض</div>',o:['بيانات','معلومات'],a:1}]},
+ {t:'قاعدة البيانات',goal:'أعرف معنى قاعدة البيانات',
+  rule:'<b>قاعدة البيانات:</b> نظام ينظّم البيانات<br>لنجدها بسرعة.',
+  ex:flow('<div class="chip" style="font-size:18px">سعد 14 محمد<br>جدة 15 الرياض</div>',mt(['الاسم','العمر'],[['سعد','14'],['محمد','15']]),'بيانات متفرقة','قاعدة بيانات'),type:'quiz',rounds:[
+  {p:'قاعدة البيانات:',v:'',o:['تنظّم البيانات','ترسم الصور'],a:0},
+  {p:'أيّهما مثال على قاعدة بيانات؟',v:'',o:['دفتر العناوين','قلم رصاص'],a:0},
+  {p:'قاعدة البيانات تتكون من:',v:'',o:['جداول','أصوات'],a:0}]},
+ {t:'السجل والحقل',goal:'أحدّد السجل والحقل في الجدول',
+  rule:'<b>السجل:</b> صف ↔ (أفقي)<br><b>الحقل:</b> عمود ↕ (رأسي)',
+  ex:`<div class="flow"><div><small>السجل = صف</small>${mt(['الاسم','العمر'],[['سعد','14'],['محمد','15']],[0])}</div><div><small>الحقل = عمود</small><table class="mini"><thead><tr><th>الاسم</th><th class="hc">العمر</th></tr></thead><tbody><tr><td>سعد</td><td class="hc">14</td></tr><tr><td>محمد</td><td class="hc">15</td></tr></tbody></table></div></div>`,type:'table',
   head:['الاسم','رقم الهاتف','عنوان المنزل'],rows:[['سعد','05*** ***','14 شارع البدر'],['محمد','05*** ***','23 شارع النهضة'],['سلمان','05*** ***','10 شارع الزمرد'],['أحمد','05*** ***','17 شارع الثمرة']],
-  rounds:[{k:'r',i:1,p:'اضغطي على سجل محمد'},{k:'c',i:2,p:'اضغطي على حقل عنوان المنزل'},{k:'r',i:3,p:'اضغطي على سجل أحمد'},{k:'c',i:0,p:'اضغطي على حقل الاسم'},{k:'c',i:1,p:'اضغطي على حقل رقم الهاتف'}]},
- {t:'النماذج عبر الإنترنت',goal:'أوضّح فائدة النماذج عبر الإنترنت',
-  rule:'<b>النموذج عبر الإنترنت:</b> صفحة إلكترونية تفاعلية تسمح للمستخدم بإدخال المعلومات، وتجمع البيانات بطريقة آلية وسريعة.',type:'quiz',rounds:[
-  {p:'الطريقة الشائعة اليوم لجمع البيانات هي:',v:'',o:['النماذج عبر الإنترنت','الرسائل الورقية'],a:0},
-  {p:'يجيب المشاركون عن النموذج من خلال:',v:'',o:['أجهزتهم الذكية أو الحاسب','التلفاز','المذياع'],a:0},
-  {p:'الأداة المستخدمة لإنشاء النموذج في الدرس:',v:'',o:['نماذج مايكروسوفت','مايكروسوفت إيدج','الرسام'],a:0},
-  {p:'أحد برامج جمع وتحليل البيانات هو:',v:'',o:['مايكروسوفت إكسل','مايكروسوفت وورد','مايكروسوفت إيدج'],a:0}]},
+  rounds:[{k:'r',i:1,p:'اضغطي على سجل محمد'},{k:'c',i:0,p:'اضغطي على حقل الاسم'},{k:'r',i:3,p:'اضغطي على سجل أحمد'},{k:'c',i:2,p:'اضغطي على حقل عنوان المنزل'}]},
+ {t:'النماذج عبر الإنترنت',goal:'أعرف فائدة النموذج الإلكتروني',
+  rule:'<b>النموذج الإلكتروني:</b> صفحة على الإنترنت<br>تجمع البيانات بسرعة.',
+  ex:flow('<div class="chip" style="font-size:18px">أسئلة على الجوال</div>',mt(['الاسم','العمر'],[['سعد','14'],['محمد','15']]),'النموذج','الإجابات'),type:'quiz',rounds:[
+  {p:'أسرع طريقة لجمع إجابات كثيرة:',v:'',o:['نموذج إلكتروني','أوراق مكتوبة'],a:0},
+  {p:'نجيب عن النموذج من:',v:'',o:['الجوال أو الحاسب','التلفاز'],a:0},
+  {p:'نصمّم النموذج في:',v:'',o:['نماذج مايكروسوفت','الرسام'],a:0}]},
  {t:'إنشاء نموذج إلكتروني',goal:'أنشئ نموذجاً إلكترونياً جديداً',
-  rule:'رتّبي خطوات إنشاء النموذج بالضغط عليها<br>من الخطوة الأولى إلى الأخيرة.',type:'order',
-  p:'رتّبي خطوات إنشاء النموذج',steps:['فتح موقع office.com','تسجيل الدخول','الضغط على Forms','الضغط على نموذج جديد','كتابة عنوان النموذج']},
+  rule:'رتّبي الخطوات بالضغط عليها<br>من الأولى إلى الأخيرة.',
+  ex:'<div class="chip" style="font-size:18px">office.com ← Forms ← نموذج جديد ← العنوان</div>',type:'order',
+  p:'رتّبي خطوات إنشاء النموذج',steps:['فتح موقع office.com','الضغط على Forms','الضغط على نموذج جديد','كتابة عنوان النموذج']},
  {t:'أنواع الأسئلة',goal:'أختار نوع السؤال المناسب',
-  rule:'<b>نص:</b> إجابة مكتوبة مفتوحة. <b>اختيار:</b> إجابة من عدة خيارات.<br><b>تقييم:</b> نجوم أو أرقام. <b>ليكرت:</b> رأي حول عدة عبارات.',type:'quiz',rounds:[
-  {p:'ما نوع هذا السؤال؟',v:'<div class="chip">الاسم بالكامل: ..................</div>',o:T,a:0},
-  {p:'ما نوع هذا السؤال؟',v:'<div class="chip">النوع: ○ أنثى  ○ ذكر</div>',o:T,a:1},
-  {p:'ما نوع هذا السؤال؟',v:'<div class="chip">الماء: <span style="color:#f5b800">★★★☆</span></div>',o:T,a:2},
-  {p:'ما نوع هذا السؤال؟',v:'<div class="chip" style="font-size:18px;line-height:1.8">فئات الطعام<br>الخضروات: ○ ○ ○<br>الفواكه: ○ ○ ○</div>',o:T,a:3},
-  {p:'لإضافة سؤال جديد نضغط على:',v:'',o:['إضافة جديد','معاينة','إرسال'],a:0}]},
- {t:'المطلوب والقيود',goal:'أستخدم خيار «مطلوب» و«القيود»',
-  rule:'<b>مطلوب:</b> لا يمكن تقديم النموذج دون الإجابة عن السؤال.<br><b>القيود:</b> شرط على الإجابة، مثل رقم أكبر من 12.',type:'quiz',rounds:[
-  {p:'هل يقبل النموذج هذه الإجابة؟',v:formBox('10',1,1),o:['يقبلها','لا يقبلها'],a:1},
-  {p:'هل يقبل النموذج هذه الإجابة؟',v:formBox('15',1,1),o:['يقبلها','لا يقبلها'],a:0},
-  {p:'السؤال مطلوب ولم تُكتب إجابة. هل يمكن تقديم النموذج؟',v:formBox('',0,1),o:['نعم','لا'],a:1},
-  {p:'هل يقبل النموذج هذه الإجابة؟',v:formBox('12',1,1),o:['يقبلها','لا يقبلها'],a:1},
-  {p:'نجد خيار «القيود» في:',v:'',o:['مزيد من إعدادات السؤال','قائمة إرسال','صفحة الاستجابات'],a:0}]},
- {t:'المعاينة والمشاركة والتصدير',goal:'أعاين النموذج وأشاركه وأصدّر استجاباته',
-  rule:'<b>معاينة</b> ← <b>إرسال</b> عبر شفرة الاستجابة السريعة QR<br>← <b>الاستجابات</b> ← <b>فتح في Excel</b>',type:'order',
-  p:'رتّبي مراحل النموذج بعد إنشائه',steps:['الضغط على معاينة','الضغط على إرسال واختيار شفرة الاستجابة السريعة','إجابة الزميلات عن النموذج','الضغط على الاستجابات','الضغط على فتح في Excel']}
+  rule:'<b>نص:</b> أكتب الإجابة. <b>اختيار:</b> أختار من خيارات.<br><b>تقييم:</b> نجوم. <b>ليكرت:</b> جدول آراء.',
+  ex:'<div class="chip" style="font-size:17px;line-height:1.9">نص: ............ &nbsp;|&nbsp; اختيار: ○ ○<br>تقييم: <span style="color:#f5b800">★★★☆</span> &nbsp;|&nbsp; ليكرت: جدول ○ ○ ○</div>',type:'quiz',rounds:[
+  {p:'ما نوع هذا السؤال؟',v:'<div class="chip">الاسم: ..................</div>',o:T,a:0},
+  {p:'ما نوع هذا السؤال؟',v:'<div class="chip">○ أنثى  ○ ذكر</div>',o:T,a:1},
+  {p:'ما نوع هذا السؤال؟',v:'<div class="chip"><span style="color:#f5b800">★★★☆</span></div>',o:T,a:2},
+  {p:'ما نوع هذا السؤال؟',v:'<div class="chip" style="font-size:18px;line-height:1.8">الخضروات: ○ ○ ○<br>الفواكه: ○ ○ ○</div>',o:T,a:3}]},
+ {t:'المطلوب والقيود',goal:'أستخدم «مطلوب» و«القيود»',
+  rule:'<b>مطلوب *:</b> يجب الإجابة عن السؤال.<br><b>القيد:</b> شرط على الإجابة.',
+  ex:formBox('15',1,1),type:'quiz',rounds:[
+  {p:'القيد: أكبر من 12. هل يقبل النموذج 10؟',v:formBox('10',1,1),o:['نعم','لا'],a:1},
+  {p:'القيد: أكبر من 12. هل يقبل النموذج 15؟',v:formBox('15',1,1),o:['نعم','لا'],a:0},
+  {p:'السؤال مطلوب وفارغ. هل يُرسَل النموذج؟',v:formBox('',0,1),o:['نعم','لا'],a:1},
+  {p:'النجمة الحمراء * تعني:',v:'',o:['السؤال مطلوب','السؤال سهل'],a:0}]},
+ {t:'المشاركة والتصدير',goal:'أشارك النموذج وأصدّر الاستجابات',
+  rule:'<b>معاينة</b> ← <b>إرسال</b> ← <b>الاستجابات</b> ← <b>فتح في Excel</b>',
+  ex:'<div class="chip" style="font-size:18px">شفرة الاستجابة السريعة QR: نمسحها بالجوال لفتح النموذج</div>',type:'order',
+  p:'رتّبي مراحل النموذج',steps:['معاينة النموذج','إرسال النموذج بشفرة QR','الضغط على الاستجابات','فتح الاستجابات في Excel']}
 ];
 let st={name:'',cls:'',stars:[]};
 try{const s=JSON.parse(localStorage.getItem('dg2')||'null');if(s&&s.name)st=s}catch(e){}
@@ -179,7 +191,7 @@ function map(){
 }
 function intro(i){
  cur=i;const l=L[i];
- app.innerHTML=bar(i+1,'هدف المحطة',[`المحطة ${i+1} من 8`])+`<div class="goal"><h2>${l.goal}</h2></div><div class="box rule">${l.rule}</div><div class="row"><button class="main" id="go">ابدئي</button></div><div class="row" style="margin-top:4px"><button class="link" id="bk">العودة للخريطة</button></div>`;
+ app.innerHTML=bar(i+1,'هدف المحطة',[`المحطة ${i+1} من 8`])+`<div class="goal"><h2>${l.goal}</h2></div><div class="box rule">${l.rule}${l.ex?`<div style="margin-top:12px;padding-top:12px;border-top:1.5px dashed #ccc"><div style="font-size:15px;color:var(--soft);margin-bottom:6px">مثال</div>${l.ex}</div>`:''}</div><div class="row"><button class="main" id="go">ابدئي</button></div><div class="row" style="margin-top:4px"><button class="link" id="bk">العودة للخريطة</button></div>`;
  document.getElementById('go').onclick=()=>{step=0;miss=0;if(l.type==='order'){order=shuffle(l.steps);picked=0}play()};
  document.getElementById('bk').onclick=map;
 }
